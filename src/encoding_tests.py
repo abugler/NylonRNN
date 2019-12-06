@@ -6,7 +6,7 @@ import pretty_midi
 training_list = "\\data\\classical_guitar_training_set"
 training_folder = "\\data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
 root = ""
-full_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\MelodyLSTM"
+full_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN"
 
 # This is done to keep Pycharm from giving me a hard time.
 training_files = None
@@ -43,10 +43,15 @@ def test_generate_all():
 
 def test_generate_problematic():
     """
-    This test tests the pieces that was causing the "test_generate_all" test to fail
+    This test tests the pieces that was causing the "test_generate_all" test to fail.
+
+    This test will fail. I do not know why these songs fail.
+    It was not worth the time and effort to figure out why these songs were giving me a hard time.
+    I hypothesize that songs with bpms of over 250 are giving it trouble, but I do not know for sure.
     """
     problematic_files = [
         "Bach_Partita_No1_BWV825_Gigue.mid",
+        # 2178 timesteps in the first range. tempo = 252, so each timestep should be 60 / (252 * 24) = .01 seconds
         "Falu_Mishi.mid"
     ]
     passed_all = True
@@ -59,4 +64,4 @@ def test_generate_problematic():
             passed_all = False
     assert passed_all
 
-test_generate_problematic()
+# test_generate_problematic()

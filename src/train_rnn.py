@@ -4,6 +4,9 @@ import importlib
 import numpy as np
 import torch
 import torch.nn as nn
+import torch
+import torch.nn.functional as F
+from torch.utils.data import DataLoader
 import pretty_midi
 # import filter_songs
 
@@ -25,35 +28,75 @@ https://www.deeplearningwizard.com/deep_learning/practical_pytorch/pytorch_lstm_
 
 ## Let us define our RNN class
 
-class MelodyLSTM(torch.nn.Module):
-    def __init__(self, tokens, n_steps=100, n_hidden=512, n_layers=3, dropout=.5, learning_rate=.003):
+class EtudeRNN(torch.nn.Module):
+    def __init__(self, input_dimensions, n_steps=100, n_hidden=128, n_layers=3, dropout=.5, learning_rate=.003):
         super().__init__()
         self.dropout = dropout
         self.n_layers = n_layers
         self.n_hidden = n_hidden
         self.learning_rate = learning_rate
-        self.input_dimensions = len(tokens)
+        self.input_dimensions = input_dimensions
 
         self.layers = []
 
-        # Making token dictionaries
-        self.tokens = tokens
-
         # Define LSTM
-        self.lstm = nn.LSTM(self.input_dimensions, hidden_size=n_hidden, num_layers=n_layers,
-                            batch_first=True, dropout=dropout)
+        self.lstm = nn.LSTM(input_size=self.input_dimensions, hidden_size=n_hidden,
+                    num_layers=n_layers, batch_first=True, dropout=dropout)
         # Readout Layer
         self.fc = nn.Linear(n_hidden, self.input_dimensions)
+        self.activation = F.sigmoid
 
-    def forward(self, x):
+
+    def forward(self, x, timesteps):
+        """
+        Predicts the next timesteps - x.shape[0] notes
+        :param x: A tensor of shape (sequence, batch_size, self.input_dimensions)
+        :param timesteps: Number of total timesteps that should be outputed
+        :return out: A tensor of shape (timesteps, batch_size, self.input_dimensions).
+        Can be coded to a PrettyMIDI object with the decoding_to_midi
+        """
+
+        if x.size[0] >= timesteps:
+            raise ValueError("Timesteps must be greater than the x.size[0]. "
+                             "(What would we predict then if timesteps <= x.size(0)?)")
 
         # init hidden state
-        h0 = torch.zeros(self.input_dimensions, x.size(0), self.n_hidden).requires_grad_()
+        hn = torch.randn(self.n_layers, self.n_hidden)
         # init cell state
-        c0 = torch.zeros(self.input_dimensions, x.size(0), self.hidden_dim).requires_grad_()
-        out, _ = self.lstm(x, (h0.detach(), c0.detach()))
-        out = self.fc(out[:, -1, :])
+        cn = torch.randn(self.n_layers, self.n_hidden)
+
+        # init out vector
+        out = torch.empty(timesteps, x.size[1], self.input_dimensions)
+        out[0:x.size(0), :, :] = x
+
+        network_in = x[0, :, :]
+        for step in range(timesteps - 1):
+            lstm_output, (hn, cn) = self.lstm(network_in, (hn.detach(), cn.detach()))
+            if step + 1 >= x.size[0]:
+                network_in = self.activation(self.fc(lstm_output))
+                out[step + 1, :, :] = network_in
+            else:
+                network_in = x[step + 1, :, :]
         return out
+
+def train_LSTM(model, training_dataset, validation_dataset, n_epochs=1000, lr=1e-4, batch_size=50):
+    loss = nn.MSELoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    training_dataloader = DataLoader(training_dataset, batch_size=batch_size)
+    validation_dataloader = DataLoader(validation_dataset, batch_size=batch_size)
+    for epoch in range(n_epochs):
+        for features, targets in training_dataloader:
+            optimizer.zero_grad()
+            # init hidden state
+            hn = torch.randn(model.n_layers, model.n_hidden)
+            # init cell state
+            cn = torch.randn(model.n_layers, model.n_hidden)
+            pred = model(features)
+            single_loss = loss(pred, targets)
+            single_loss.backward()
+            optimizer.step()
+
+
 
 # E2 is the lowest note on a Standard classical Guitar
 E2 = 40
@@ -97,6 +140,8 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             start_time = tempo_change_times[i]
             end_time = tempo_change_times[i + 1] if i < len(tempi) - 1 else midi_data.get_end_time()
             vector = np.arange(start_time, end_time, 1 / (tempi[i] / 60 * 24))
+            if not range_vectors:
+                vector[0] -= 1e5
             if vector.shape[0] > beats_min * 24:
                 range_vectors.append(vector)
                 range_tempi.append(tempi[i])
@@ -118,7 +163,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     encoded_matrices = []
     instrument = midi_data.instruments[0]
     for vector, tempo in zip(range_vectors, range_tempi):
-        midi_matrix = instrument.get_piano_roll(times=vector)[E2:B5, :]
+        midi_matrix = instrument.get_piano_roll(times=vector)[E2:B5 + 1, :]
         # Right now, midi_matrix is a matrix of velocities.
         # Let's change this so midi matrix is a matrix of whether the note is played or not
         one_hot = np.vectorize(lambda x: np.int(x != 0))
@@ -137,6 +182,9 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     :param tempo:
     :return:
     """
+    raise NotImplementedError("bitch")
+
+
 
 
 
