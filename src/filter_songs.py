@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 """
 This script is outdated and not relevant.  The Tagtraum labeling was inadequate. Tagged pop songs as metal.  

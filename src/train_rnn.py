@@ -3,9 +3,8 @@ import torch.nn as nn
 import torch
 from torch.utils.data import DataLoader, Dataset
 import pretty_midi
-import configurations.configuration as config
-from src.encoding import encoding_to_LSTM
-from src.etude_rnn import EtudeRNN
+from encoding import encoding_to_LSTM
+from etude_rnn import EtudeRNN
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
@@ -13,7 +12,7 @@ model_path = "src\\LSTM_model"
 song_list_filepath = "data\\classical_guitar_training_set"
 try:
     with open(song_list_filepath, 'r') as song_list_file:
-        song_list = song_list_file.readlines()
+        song_list = ''.join(song_list_file.read()).split('\n')
 except FileNotFoundError:
     data_path = absolute_path + data_path
     song_list_filepath = absolute_path + song_list_filepath
@@ -31,7 +30,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, encoded_matrices, lr=1e-4, batch_size=50):
+def train_LSTM(model, encoded_matrices, lr=1e-4, batch_size=25):
     """
     Trains LSTM
 

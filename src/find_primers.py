@@ -1,6 +1,6 @@
 import pretty_midi
 import numpy as np
-from src.encoding import encoding_to_LSTM
+from encoding import encoding_to_LSTM
 """
 This file finds the "primer matrix" for the feed_forward of the neural network
 """

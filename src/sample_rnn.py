@@ -1,5 +1,5 @@
 from src.encoding import decoding_to_midi, encoding_to_LSTM
-from src.etude_rnn import EtudeRNN
+from etude_rnn import EtudeRNN
 import numpy as np
 import torch
 import datetime

@@ -1,4 +1,4 @@
-from src import encoding
+import encoding
 import numpy as np
 import datetime
 import pretty_midi
