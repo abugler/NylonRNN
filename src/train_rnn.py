@@ -28,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
+def train_LSTM(model, midi_dataset, device, lr=1e-4, batch_size=75):
     """
     Trains LSTM
 
@@ -40,12 +40,8 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
     """
     loss = nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
-    begin = time.time()
     training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model.device = device
-    model.to(device)
     print(device)
     for epoch in range(model.n_steps):
         begin = time.time()
@@ -87,9 +83,12 @@ for matrix in encoded_matrices:
 small_midi_dataset = MidiDataset(small_x, small_y)
 
 LSTMmodel = EtudeRNN(50)
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+model.device = device
+model.to(device)
 
-LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset)
-LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset)
+LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, device)
+LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, device)
 
 torch.save(LSTMmodel.state_dict(), model_path)
 
