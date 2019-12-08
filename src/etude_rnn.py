@@ -11,6 +11,8 @@ class EtudeRNN(torch.nn.Module):
         self.learning_rate = learning_rate
         self.input_dimensions = input_dimensions
 
+        self.device = None
+
         self.layers = []
 
         # Define LSTM
@@ -38,6 +40,8 @@ class EtudeRNN(torch.nn.Module):
             # init cell state
             cn = torch.zeros(self.n_layers, x.size(1), self.n_hidden)
 
+        hn.to(device)
+        cn.to(device)
 
         lstm_output, (hn, cn) = self.lstm(x, (hn.detach(), cn.detach()))
         out = self.activation(self.fc(lstm_output))

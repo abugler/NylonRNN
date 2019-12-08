@@ -42,7 +42,9 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     begin = time.time()
     training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model.device = device
     model.to(device)
     model.parameters().to(device)
     print(device)
@@ -50,6 +52,7 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
         begin = time.time()
         print("Epoch = %i" % epoch)
         for features, targets in training_dataloader:
+            features.to(device)
             out, _, _ = model(features)
             batch_loss = loss(out, targets)
             print(batch_loss)
