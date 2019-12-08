@@ -5,20 +5,18 @@ from torch.utils.data import DataLoader, Dataset
 import pretty_midi
 from encoding import encoding_to_LSTM
 from etude_rnn import EtudeRNN
+import os
+import time
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
-data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
 model_path = "src\\LSTM_model"
-song_list_filepath = "data\\classical_guitar_training_set"
+npdata_filepath = "data\\classical_guitar_npdata\\"
 try:
-    with open(song_list_filepath, 'r') as song_list_file:
-        song_list = ''.join(song_list_file.read()).split('\n')
+    list_songs = os.listdir(npdata_filepath)
 except FileNotFoundError:
-    data_path = absolute_path + data_path
-    song_list_filepath = absolute_path + song_list_filepath
+    npdata_filepath = absolute_path + npdata_filepath
     model_path = absolute_path + model_path
-    with open(song_list_filepath, 'r') as song_list_file:
-        song_list = ''.join(song_list_file.read()).split('\n')
+    list_songs = os.listdir(npdata_filepath)
 
 class MidiDataset(Dataset):
     def __init__(self, x, y):
@@ -30,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, encoded_matrices, lr=1e-4, batch_size=25):
+def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
     """
     Trains LSTM
 
@@ -42,35 +40,53 @@ def train_LSTM(model, encoded_matrices, lr=1e-4, batch_size=25):
     """
     loss = nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
-    # validation_dataloader = DataLoader(validation_dataset, batch_size=batch_size)
+    begin = time.time()
+    training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
     print(device)
     for epoch in range(model.n_steps):
+        begin = time.time()
         print("Epoch = %i" % epoch)
-        batch = np.random.choice(len(encoded_matrices), batch_size, replace=False)
-        batch_loss = None
-        for idx in batch:
-            matrix = encoded_matrices[idx]
-            matrix.to(device)
-            optimizer.zero_grad()
-            pred = model(matrix[:, :, 0:1].float(), matrix.size(2))
-            if batch_loss is not None:
-                batch_loss += loss(pred, matrix.float())
-            else:
-                batch_loss = loss(pred, matrix.float())
-        batch_loss.backward()
-        optimizer.step()
-
+        for features, targets in training_dataloader:
+            out, _, _ = model(features)
+            batch_loss = loss(out, targets)
+            print(batch_loss)
+            batch_loss.backward()
+            optimizer.step()
+        print("Epoch Duration: %f seconds"%(time.time() - begin))
+        if epoch % 5 == 0:
+            torch.save(model.state_dict(), model_path)
     return model
 
 encoded_matrices = []
-for path in song_list:
-    midi_data = pretty_midi.PrettyMIDI(data_path + path)
-    for matrix in encoding_to_LSTM(midi_data):
-        encoded_matrices.append(torch.from_numpy(matrix[np.newaxis, :, :]))
+for path in list_songs:
+    encoded_matrices.append(torch.from_numpy(np.load(npdata_filepath + path)[np.newaxis, :, :]).float())
+
+sample_beats = 16
+sample_time_steps = 24 * sample_beats
+long_x = []
+long_y = []
+for matrix in encoded_matrices:
+    for i in range(0, matrix.size(2) - sample_time_steps - 1):
+        long_x.append(matrix[0, :, i:i+sample_time_steps])
+        long_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
+long_midi_dataset = MidiDataset(long_x, long_y)
+
+sample_beats = 1
+sample_time_steps = 24 * sample_beats
+small_x = []
+small_y = []
+for matrix in encoded_matrices:
+    for i in range(0, matrix.size(2) - sample_time_steps - 1):
+        small_x.append(matrix[0, :, i:i+sample_time_steps])
+        small_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
+small_midi_dataset = MidiDataset(small_x, small_y)
 
 LSTMmodel = EtudeRNN(50)
-LSTMmodel = train_LSTM(LSTMmodel, encoded_matrices)
+
+LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset)
+LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset)
+
 torch.save(LSTMmodel.state_dict(), model_path)
 

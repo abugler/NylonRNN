@@ -15,12 +15,12 @@ class EtudeRNN(torch.nn.Module):
 
         # Define LSTM
         self.lstm = nn.LSTM(input_size=self.input_dimensions, hidden_size=n_hidden,
-                    num_layers=n_layers, batch_first=True, dropout=dropout)
+                    num_layers=n_layers, batch_first=False, dropout=dropout)
         # Readout Layer
         self.fc = nn.Linear(n_hidden, self.input_dimensions)
         self.activation = torch.sigmoid
 
-    def forward(self, x, timesteps=None):
+    def forward(self, x, hn = None, cn = None):
         """
         Predicts the next timesteps - x.shape[0] notes
         :param x: A tensor of shape (batch_size, self.input_dimensions, timesteps)
@@ -30,27 +30,18 @@ class EtudeRNN(torch.nn.Module):
         """
 
         # reorder x
+
         x = x.permute(2, 0, 1)
+        if hn is None or cn is None:
+            # init hidden state
+            hn = torch.zeros(self.n_layers, x.size(1), self.n_hidden)
+            # init cell state
+            cn = torch.zeros(self.n_layers, x.size(1), self.n_hidden)
 
-        if x.size(0) >= timesteps:
-            raise ValueError("Timesteps must be greater than the x.size[0]. "
-                             "(What would we predict then if timesteps <= x.size(0)?)")
 
-        # init hidden state
-        hn = torch.randn(self.n_layers, x.size(1), self.n_hidden)
-        # init cell state
-        cn = torch.randn(self.n_layers, x.size(1), self.n_hidden)
+        lstm_output, (hn, cn) = self.lstm(x, (hn.detach(), cn.detach()))
+        out = self.activation(self.fc(lstm_output))
 
-        # init out vector
-        out = torch.empty(timesteps, x.size(1), self.input_dimensions)
-        out[0:x.size(0), :, :] = x
+        out = out.permute(1, 2, 0)
+        return out, hn, cn
 
-        network_in = x[0:1, :, :]
-        for step in range(timesteps - 1):
-            lstm_output, (hn, cn) = self.lstm(network_in, (hn.detach(), cn.detach()))
-            if step + 1 >= x.size(0):
-                network_in = self.activation(self.fc(lstm_output.detach().reshape(self.n_hidden))).reshape(1, x.size(1), self.input_dimensions)
-                out[step + 1, :, :] = network_in[0, :, :]
-            else:
-                network_in = x[step + 1:step + 2, :, :]
-        return out.permute((1, 2, 0))

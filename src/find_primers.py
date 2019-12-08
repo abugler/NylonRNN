@@ -24,8 +24,8 @@ for path in song_list:
     midi_data = pretty_midi.PrettyMIDI(data_path + path)
     encoded_matrices += encoding_to_LSTM(midi_data)
 
-primer_matrix = np.empty((50, len(encoded_matrices)))
+primer_matrix = np.empty((50, len(encoded_matrices) * 24))
 for i, mat in zip(range(len(encoded_matrices)), encoded_matrices):
-    primer_matrix[:, i] = mat[:, 0]
+    primer_matrix[:, i: i + 24] = mat[:, 0:24]
 
 np.save(primer_path, primer_matrix)

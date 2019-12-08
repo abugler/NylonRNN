@@ -30,7 +30,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     :param tempo: Tempo of pretty_midi object.  Default is 100
     :return: encoded_matrices: A list of encoded matrices
     """
-    beats_min = 8
+    beats_min = 16
     tempo_change_times, tempi = midi_data.get_tempo_changes()
     if tempo_change_times is None:
         tempo = midi_data.estimate_tempo()
@@ -110,9 +110,11 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     :return midi_data:
     """
 
+    approx_to_zero = np.vectorize(lambda x: 0 if x < 1e-2 else 1)
+
     # Split encoded_matrix into piano_roll and pluck_matrix
-    piano_roll = encoded_matrix[:B5 - E2 + 1, :]
-    pluck_matrix = encoded_matrix[-6:, :]
+    piano_roll = approx_to_zero(encoded_matrix[:B5 - E2 + 1, :])
+    pluck_matrix = approx_to_zero(encoded_matrix[-6:, :])
     plucks_per_timestep = pluck_matrix.sum(axis=0)
     pluck_nonzero = plucks_per_timestep.nonzero()[0]
 
