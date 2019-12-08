@@ -18,9 +18,18 @@ class EtudeRNN(torch.nn.Module):
         # Define LSTM
         self.lstm = nn.LSTM(input_size=self.input_dimensions, hidden_size=n_hidden,
                     num_layers=n_layers, batch_first=False, dropout=dropout)
+
         # Readout Layer
         self.fc = nn.Linear(n_hidden, self.input_dimensions)
+
         self.activation = torch.sigmoid
+
+    def set_device(self, device):
+        self.to(device)
+        self.device = device
+        self.lstm.to(device)
+        self.fc.to(device)
+        self.device = device
 
     def forward(self, x, hn = None, cn = None):
         """
@@ -44,6 +53,7 @@ class EtudeRNN(torch.nn.Module):
         hn.to(self.device)
         cn = cn.detach()
         cn.to(self.device)
+        x.to(self.device)
 
         lstm_output, (hn, cn) = self.lstm(x, (hn, cn))
         out = self.activation(self.fc(lstm_output))

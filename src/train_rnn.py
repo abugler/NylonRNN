@@ -85,8 +85,7 @@ small_midi_dataset = MidiDataset(small_x, small_y)
 
 LSTMmodel = EtudeRNN(50)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-LSTMmodel.device = device
-LSTMmodel.to(device)
+LSTMmodel.set_device(device)
 
 LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, device)
 LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, device)
