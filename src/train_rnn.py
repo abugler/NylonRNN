@@ -46,7 +46,6 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.device = device
     model.to(device)
-    model.parameters().to(device)
     print(device)
     for epoch in range(model.n_steps):
         begin = time.time()
