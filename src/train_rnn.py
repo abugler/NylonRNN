@@ -28,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
+def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=300):
     """
     Trains LSTM
 
@@ -55,8 +55,8 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
             batch_loss.backward()
             optimizer.step()
         print("Epoch Duration: %f seconds"%(time.time() - begin))
-        if epoch % 5 == 0:
-            torch.save(model.state_dict(), model_path)
+        if epoch % 1 == 0:
+            torch.save(model.state_dict(), model_path + "_epoch%i"%(epoch))
     return model
 
 encoded_matrices = []
@@ -90,5 +90,5 @@ if torch.cuda.is_available():
 LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset)
 LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset)
 
-torch.save(LSTMmodel.state_dict(), model_path)
+torch.save(LSTMmodel.state_dict(), model_path + _final)
 
