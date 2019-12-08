@@ -27,8 +27,8 @@ class EtudeRNN(torch.nn.Module):
     def set_device(self, device):
         self.device = device
         if device == "cuda:0":
-            self.lstm.cuda()
-            self.fc.cuda()
+            self.lstm = self.lstm.cuda()
+            self.fc = self.fc.cuda()
             print("The device is cuda")
 
     def forward(self, x, hn = None, cn = None):
@@ -53,9 +53,9 @@ class EtudeRNN(torch.nn.Module):
         cn = cn.detach()
 
         if self.device == 'cuda:0':
-            hn.cuda()
-            cn.cuda()
-            x.cuda()
+            hn = hn.cuda()
+            cn = cn.cuda()
+            x = x.cuda()
 
         lstm_output, (hn, cn) = self.lstm(x, (hn, cn))
         out = self.activation(self.fc(lstm_output))

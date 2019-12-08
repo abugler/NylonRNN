@@ -47,8 +47,8 @@ def train_LSTM(model, midi_dataset, lr=1e-4, batch_size=75):
         print("Epoch = %i" % epoch)
         for features, targets in training_dataloader:
             if model.device == "cuda:0":
-                features.cuda()
-                targets.cuda()
+                features = features.cuda()
+                targets = targets.cuda()
             out, _, _ = model(features)
             batch_loss = loss(out, targets)
             print(batch_loss)
