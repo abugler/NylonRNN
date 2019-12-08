@@ -40,8 +40,8 @@ class EtudeRNN(torch.nn.Module):
             # init cell state
             cn = torch.zeros(self.n_layers, x.size(1), self.n_hidden)
 
-        hn.to(device)
-        cn.to(device)
+        hn.to(self.device)
+        cn.to(self.device)
 
         lstm_output, (hn, cn) = self.lstm(x, (hn.detach(), cn.detach()))
         out = self.activation(self.fc(lstm_output))
