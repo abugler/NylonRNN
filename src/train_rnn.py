@@ -39,7 +39,7 @@ def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
     :return:
     """
     loss = nn.MSELoss()
-    optichrmizer = torch.optim.SGD(model.parameters(), lr=lr)
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
 
     for epoch in range(model.n_steps):
