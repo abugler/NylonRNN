@@ -8,7 +8,7 @@ import pretty_midi
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 primer_path = "src\\primer.npy"
 lstm_path = "src\\LSTM_model"
-output_path = "midi_ouput\\"
+output_path = "midi_output\\"
 
 model = EtudeRNN(50)
 beats_to_generate = 64
@@ -32,14 +32,18 @@ primer_np = primer_matrix[np.newaxis, :, random_row:random_row+24]
 primer = torch.from_numpy(primer_np).float()
 
 generated_matrix = np.empty((50, beats_to_generate * 24))
-generated_matrix[:, 0] = primer_np[0, :, :].flatten()
+generated_matrix[:, 0:24] = primer_np[0, :, :]
 
+# init hidden state
+hn = torch.zeros(model.n_layers, 1, model.n_hidden)
+# init cell state
+cn = torch.zeros(model.n_layers, 1, model.n_hidden)
 
-for i in range(24, beats_to_generate * 24 - 1):
-    primer, hn, cn = model(primer, hn, cn)
-    generated_matrix[:, i:i+24] = primer[0, :, :].detach().numpy().flatten()
+for i in range(1, (beats_to_generate -1) * 24):
+    out, hn, cn = model(primer, hn, cn)
+    generated_matrix[:, i + 23]= out[0, :, -1].detach().numpy()
+    primer = torch.from_numpy(generated_matrix[np.newaxis, :, i:i+24]).float()
 
 midi_data = decoding_to_midi(generated_matrix)
-with open(output_path + str(now.date()) + '_' + str(np.random.randint(0, 1e8)) + ".mid", "w") as file:
-    midi_data.write(file)
+midi_data.write(output_path + str(now.date()) + '_' + str(np.random.randint(0, 1e8)) + ".mid")
 
