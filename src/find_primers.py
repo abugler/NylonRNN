@@ -26,6 +26,6 @@ for path in song_list:
 
 primer_matrix = np.empty((50, len(encoded_matrices) * 24))
 for i, mat in zip(range(len(encoded_matrices)), encoded_matrices):
-    primer_matrix[:, i: i + 24] = mat[:, 0:24]
+    primer_matrix[:, 24 * i: 24 *i + 24] = mat[:, 0:24]
 
 np.save(primer_path, primer_matrix)

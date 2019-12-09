@@ -35,7 +35,7 @@ generated_matrix = np.empty((50, beats_to_generate * 24))
 generated_matrix[:, 0] = primer_np[0, :, :].flatten()
 
 
-for i in range(24, beats_to_generate * 24):
+for i in range(24, beats_to_generate * 24 - 1):
     primer, hn, cn = model(primer, hn, cn)
     generated_matrix[:, i:i+24] = primer[0, :, :].detach().numpy().flatten()
 
