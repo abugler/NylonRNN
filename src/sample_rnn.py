@@ -27,7 +27,8 @@ primer_matrix = primer_matrix.astype(float)
 model.eval()
 now = datetime.datetime.now()
 np.random.seed(int(now.microsecond * now.second ** 2))
-random_row = np.random.randint(0, primer_matrix.shape[1] / 24)
+# random_row = np.random.randint(0, primer_matrix.shape[1] / 24)
+random_row = 0
 primer_np = primer_matrix[np.newaxis, :, random_row:random_row+24]
 primer = torch.from_numpy(primer_np).float()
 

@@ -28,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, midi_dataset, training_set, batch_size=25):
+def train_LSTM(model, midi_dataset, training_set, batch_size=1):
     """
     Trains LSTM
 
