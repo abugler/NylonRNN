@@ -90,9 +90,8 @@ LSTMmodel = EtudeRNN(50)
 if torch.cuda.is_available():
     LSTMmodel.set_device('cuda:0')
 
-for i in range(50):
-    LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, "coarse")
-    LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, "fine")
+LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, "coarse")
+LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, "fine")
 
 torch.save(LSTMmodel.state_dict(), model_path + _final)
 
