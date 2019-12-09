@@ -63,15 +63,15 @@ encoded_matrices = []
 for path in list_songs:
     encoded_matrices.append(torch.from_numpy(np.load(npdata_filepath + path)[np.newaxis, :, :]).float())
 
-sample_beats = 16
-sample_time_steps = 24 * sample_beats
-long_x = []
-long_y = []
-for matrix in encoded_matrices:
-    for i in range(0, matrix.size(2) - sample_time_steps - 1):
-        long_x.append(matrix[0, :, i:i+sample_time_steps])
-        long_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
-long_midi_dataset = MidiDataset(long_x, long_y)
+# sample_beats = 16
+# sample_time_steps = 24 * sample_beats
+# long_x = []
+# long_y = []
+# for matrix in encoded_matrices:
+#     for i in range(0, matrix.size(2) - sample_time_steps - 1):
+#         long_x.append(matrix[0, :, i:i+sample_time_steps])
+#         long_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
+# long_midi_dataset = MidiDataset(long_x, long_y)
 
 sample_beats = 1
 sample_time_steps = 24 * sample_beats
@@ -87,7 +87,7 @@ LSTMmodel = EtudeRNN(50)
 if torch.cuda.is_available():
     LSTMmodel.set_device('cuda:0')
 
-LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, "coarse")
+# LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, "coarse")
 LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, "fine")
 
 torch.save(LSTMmodel.state_dict(), model_path + _final)
