@@ -38,7 +38,7 @@ def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
     :param batch_size: Batch Size for data loader
     :return:
     """
-    loss = nn.NLLLoss()
+    loss = nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
 
