@@ -7,7 +7,7 @@ import pretty_midi
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 primer_path = "src\\primer.npy"
-lstm_path = "src\\LSTM_model"
+lstm_path = "src\\LSTM_modelfine_epoch0"
 output_path = "midi_output\\"
 
 model = EtudeRNN(50)
@@ -15,13 +15,13 @@ beats_to_generate = 64
 
 try:
     primer_matrix = np.load(primer_path)
-    model.load_state_dict(torch.load(lstm_path))
+    model.load_state_dict(torch.load(lstm_path, map_location='cpu'))
 except FileNotFoundError:
     primer_path = absolute_path + primer_path
     lstm_path = absolute_path + lstm_path
     output_path = absolute_path + output_path
     primer_matrix = np.load(primer_path)
-    model.load_state_dict(torch.load(lstm_path))
+    model.load_state_dict(torch.load(lstm_path, map_location='cpu'))
 
 primer_matrix = primer_matrix.astype(float)
 model.eval()

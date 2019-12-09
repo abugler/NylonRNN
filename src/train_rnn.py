@@ -28,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
+def train_LSTM(model, midi_dataset, training_set, batch_size=25):
     """
     Trains LSTM
 
@@ -39,7 +39,7 @@ def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
     :return:
     """
     loss = nn.MSELoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    optimizer = torch.optim.SGD(model.parameters(), lr=model.learning_rate, momentum=1e-3)
     training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
 
     for epoch in range(model.n_steps):
@@ -50,6 +50,7 @@ def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
                 features = features.cuda()
                 targets = targets.cuda()
             model.zero_grad()
+            optimizer.zero_grad()
             out, _, _ = model(features)
             batch_loss = loss(out, targets)
             print(batch_loss)
@@ -63,6 +64,7 @@ def train_LSTM(model, midi_dataset, training_set: str, lr=1e-4, batch_size=300):
 encoded_matrices = []
 for path in list_songs:
     encoded_matrices.append(torch.from_numpy(np.load(npdata_filepath + path)[np.newaxis, :, :]).float())
+    break
 
 sample_beats = 16
 sample_time_steps = 24 * sample_beats
@@ -84,7 +86,7 @@ for matrix in encoded_matrices:
         small_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
 small_midi_dataset = MidiDataset(small_x, small_y)
 
-LSTMmodel = EtudeRNN(50, n_steps=1)
+LSTMmodel = EtudeRNN(50)
 if torch.cuda.is_available():
     LSTMmodel.set_device('cuda:0')
 
