@@ -7,7 +7,7 @@ import pretty_midi
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 primer_path = "src\\primer.npy"
-lstm_path = "src\\LSTM_modelfine_epoch0"
+lstm_path = "src\\LSTM_modelfine_epoch10"
 output_path = "midi_output\\"
 
 model = EtudeRNN(50)
