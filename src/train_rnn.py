@@ -28,7 +28,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, midi_dataset, training_set, batch_size=20):
+def train_LSTM(model, midi_dataset, training_set, batch_size=4, regular_param=1e-4):
     """
     Trains LSTM
 
@@ -56,7 +56,7 @@ def train_LSTM(model, midi_dataset, training_set, batch_size=20):
             batch_loss = loss(out, targets)
             for list in model.lstm.all_weights:
                 for param in list:
-                    batch_loss += regularization(param.data.float(), torch.zeros_like(param.data).float())
+                    batch_loss +=  regular_param * regularization(param.data.float(), torch.zeros_like(param.data).float())
             print(batch_loss)
             batch_loss.backward()
             optimizer.step()
@@ -68,7 +68,6 @@ def train_LSTM(model, midi_dataset, training_set, batch_size=20):
 encoded_matrices = []
 for path in list_songs:
     encoded_matrices.append(torch.from_numpy(np.load(npdata_filepath + path)[np.newaxis, :, :]).float())
-
 
 sample_beats = 16
 sample_time_steps = 24 * sample_beats
@@ -90,11 +89,12 @@ for matrix in encoded_matrices:
         small_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
 small_midi_dataset = MidiDataset(small_x, small_y)
 
-LSTMmodel = EtudeRNN(50, n_steps=50)
+LSTMmodel = EtudeRNN(50, n_steps=30)
 if torch.cuda.is_available():
     LSTMmodel.set_device('cuda:0')
 
 LSTMmodel = train_LSTM(LSTMmodel, long_midi_dataset, "coarse")
+LSTMmodel.n_steps = 10
 LSTMmodel = train_LSTM(LSTMmodel, small_midi_dataset, "fine")
 
 torch.save(LSTMmodel.state_dict(), model_path + "_final")
