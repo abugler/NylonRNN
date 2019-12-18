@@ -41,7 +41,7 @@ def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
     :param batch_size: Batch Size for data loader
     :return:
     """
-    loss = nn.BCEWithLogitsLoss()
+    loss = nn.BCELoss()
     regularization = nn.MSELoss()
     # training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
     training_loss = np.empty((model.n_steps))
