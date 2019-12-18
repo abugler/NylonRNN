@@ -81,10 +81,11 @@ def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
                 for param in list:
                     batch_loss += regular_param * regularization(param.data.float(), torch.zeros_like(param.data).float())
 
+        if epoch % 10 == 0:
+            print("Epoch = %i \nEpoch Duration: %f seconds \n Loss: %f" %
+              (epoch, time.time() - begin, batch_loss.item()))
         batch_loss.backward()
         optimizer.step()
-        print("Epoch = %i \nEpoch Duration: %f seconds \n Loss: %i" %
-              (epoch, time.time() - begin, batch_loss.item()))
         training_loss[epoch] = batch_loss.item()
         if epoch % 1000 == 0:
             if batch_loss.item() < saved_loss:
@@ -120,15 +121,15 @@ for path in list_songs:
 # small_midi_dataset.x = small_midi_dataset.x[:20]
 # small_midi_dataset.y = small_midi_dataset.y[:20]
 
-model = NylonRNN(50, n_steps=50000, learning_rate=5e-2)
+model = NylonRNN(50, n_steps=1, learning_rate=5e-2)
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 
-# model = train_LSTM(model, long_midi_dataset, "coarse")
 model, training_loss = train_LSTM(model, encoded_matrices, batch_size=1)
+
 plt.plot(np.arange(0, model.n_steps), training_loss)
 plt.title("BCELoss over epoch")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-torch.save(model.state_dict(), model_path + "_final")
+plt.show()
 
