@@ -109,9 +109,7 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     :param time_signature:
     :return midi_data:
     """
-
-    approx_to_zero = np.vectorize(lambda x: 0 if x < 1e-2 else 1)
-
+    approx_to_zero = np.vectorize(lambda x: 1 if np.random.random() < x else 0)
     # Split encoded_matrix into piano_roll and pluck_matrix
     piano_roll = approx_to_zero(encoded_matrix[:B5 - E2 + 1, :])
     pluck_matrix = approx_to_zero(encoded_matrix[-6:, :])
@@ -130,7 +128,10 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     for timestep in reversed(pluck_nonzero):
         plucks = np.array(pluck_matrix[:, timestep].nonzero(), dtype=np.int32).flatten()
         notes_played = np.array(piano_roll[:, timestep].nonzero(), dtype=np.int32).flatten()
-        pitches = notes_played[plucks]
+        try:
+            pitches = notes_played[plucks]
+        except IndexError:
+            continue
         for pitch in pitches:
             notes_equal_pitch = list(filter(lambda note: note.pitch == pitch + E2,
                                         midi_data.instruments[0].notes))

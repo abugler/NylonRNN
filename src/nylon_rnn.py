@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 
-class EtudeRNN(torch.nn.Module):
+class NylonRNN(torch.nn.Module):
     def __init__(self, input_dimensions, n_steps=40, n_hidden=128, n_layers=3, dropout=.2, learning_rate=.003):
         super().__init__()
         self.dropout = dropout

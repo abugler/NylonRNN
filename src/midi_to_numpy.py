@@ -1,4 +1,5 @@
 import encoding
+import pretty_midi
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
@@ -17,7 +18,9 @@ except FileNotFoundError:
 encoded_matrices = []
 iter = 0
 for path in song_list:
+    if path.find('val') == -1:
+        break
     midi_data = pretty_midi.PrettyMIDI(data_path + path)
     for matrix in encoding_to_LSTM(midi_data):
-        np.save(encode_path + str(iter) + ".npy", matrix)
+        np.save(encode_path + "val" + str(iter) + ".npy", matrix)
         iter += 1
