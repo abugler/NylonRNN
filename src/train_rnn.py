@@ -48,7 +48,7 @@ def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
     saved_loss = 1e20
     model_name = str(np.random.randint(0, 1e7))
     for epoch in range(model.n_steps):
-        optimizer = torch.optim.SGD(model.parameters(), lr=model.learning_rate * (epoch / model.n_steps), momentum=1e-3)
+        optimizer = torch.optim.SGD(model.parameters(), lr=model.learning_rate * (1 - epoch / model.n_steps), momentum=1e-3)
         begin = time.time()
         indices = np.random.choice(len(encoded_matrices), batch_size)
         model.zero_grad()
@@ -64,18 +64,18 @@ def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
             # init cell state
             cn = torch.zeros(model.n_layers, matrix.size(0), model.n_hidden)
 
-            # for i in range(matrix.size(1) - 1):
-            #     out, hn, cn = model(matrix[:, :, i:i+1], hn, cn)
-            #     if i == 0:
-            #         batch_loss = loss(out, matrix[:, :, i+1:i+2])
-            #     else:
-            #         batch_loss += loss(out, matrix[:, :, i+1:i+2])
+            for i in range(matrix.size(1) - 1):
+                out, hn, cn = model(matrix[:, :, i:i+1], hn, cn)
+                if i == 0:
+                    batch_loss = loss(out, matrix[:, :, i+1:i+2])
+                else:
+                    batch_loss += loss(out, matrix[:, :, i+1:i+2])
 
-            out, _, _ = model(matrix)
-            if batch_loss is None:
-                batch_loss = loss(out[:, :, :-1], matrix[:, :, 1:])
-            else:
-                batch_loss += loss(out[:, :, :-1], matrix[:, :, 1:])
+            # out, _, _ = model(matrix)
+            # if batch_loss is None:
+            #     batch_loss = loss(out[:, :, :-1], matrix[:, :, 1:])
+            # else:
+            #     batch_loss += loss(out[:, :, :-1], matrix[:, :, 1:])
 
             for list in model.lstm.all_weights:
                 for param in list:
@@ -121,7 +121,7 @@ for path in list_songs:
 # small_midi_dataset.x = small_midi_dataset.x[:20]
 # small_midi_dataset.y = small_midi_dataset.y[:20]
 
-model = NylonRNN(50, n_steps=1, learning_rate=5e-2)
+model = NylonRNN(50, n_steps=500000, learning_rate=5e-2)
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 

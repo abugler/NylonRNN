@@ -1,5 +1,7 @@
-import encoding
+from encoding import encoding_to_LSTM
 import pretty_midi
+import numpy as np
+
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
