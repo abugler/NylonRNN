@@ -121,7 +121,7 @@ for path in list_songs:
 # small_midi_dataset.x = small_midi_dataset.x[:20]
 # small_midi_dataset.y = small_midi_dataset.y[:20]
 
-model = NylonRNN(50, n_steps=500000, learning_rate=5e-2)
+model = NylonRNN(50, n_steps=500000, learning_rate=1e-4)
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 

@@ -30,7 +30,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     :param tempo: Tempo of pretty_midi object.  Default is 100
     :return: encoded_matrices: A list of encoded matrices
     """
-    beats_min = 16
+    beats_min = 4
     tempo_change_times, tempi = midi_data.get_tempo_changes()
     if tempo_change_times is None:
         tempo = midi_data.estimate_tempo()
@@ -68,31 +68,33 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             note.end -= inc
             note.start += inc
         return instrument
-    for vector, tempo in zip(range_vectors, range_tempi):
-        midi_matrix = instrument.get_piano_roll(times=vector)[E2:B5 + 1, :]
 
-        # Right now, midi_matrix is a matrix of velocities.
-        # Let's change this so midi matrix is a matrix of whether the note is played or not
-        one_hot = np.vectorize(lambda x: np.int(x != 0))
-        midi_matrix = one_hot(midi_matrix)
-
+    def overlap_check(instrument, midi_matrix):
         # Sometimes, start and end times overlap, and cause more than 6 notes to be detected, this fixes that
         inc = 0
         timestep = vector[1] - vector[0]
         max_simul = np.max(midi_matrix.sum(axis=0))
-        max_timestep = np.argmax(midi_matrix.sum(axis=0))
         while max_simul > 6:
             if inc > 10:
-                raise ValueError("There are more than 6 notes being played at once somewhere in this song, remove it."
-                                 "Problematic Beats: " + str(max_timestep / 24))
-
+                return None
             instrument = adjust_end_times(instrument, timestep / 10)
             midi_matrix = instrument.get_piano_roll(times=vector)[E2:B5 + 1, :]
             one_hot = np.vectorize(lambda x: np.int(x != 0))
             midi_matrix = one_hot(midi_matrix)
             max_simul = np.max(midi_matrix.sum(axis=0))
-            max_timestep = np.argmax(midi_matrix.sum(axis=0))
             inc += 1
+        return midi_matrix
+
+    for vector, tempo in zip(range_vectors, range_tempi):
+        # Right now, midi_matrix is a matrix of velocities.
+        # Let's change this so midi matrix is a matrix of whether the note is played or not
+        one_hot = np.vectorize(lambda x: np.int(x != 0))
+        midi_matrix = one_hot(instrument.get_piano_roll(times=vector)[E2:B5 + 1, :])
+        midi_matrix = overlap_check(instrument, midi_matrix)
+        if midi_matrix is None:
+            continue
+
+        midi_matrix = one_hot(midi_matrix)
 
         pluck_matrix = find_pluck_matrix(midi_data, vector, midi_matrix, tempo)
         encoded_matrices.append(
