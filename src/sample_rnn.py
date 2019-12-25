@@ -7,7 +7,7 @@ import pretty_midi
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\NylonRNN\\"
 primer_path = "src\\primer.npy"
-model_path = "models\\9385842"
+model_path = "models\\3800318"
 output_path = "midi_output\\"
 
 model = NylonRNN(50)
@@ -46,7 +46,7 @@ for i in range(1, (beats_to_generate) * 24 - 1):
     out, hn, cn = model(primer, hn, cn)
     out = out.detach().numpy()
     generated_matrix[0:44, i + 1] = approx_to_zero(out[0, 0:44, -1])
-    generated_matrix[44:50, i + 1] = approx_to_double(out[0, 44:50, -1])
+    generated_matrix[44:50, i + 1] = approx_to_zero(out[0, 44:50, -1])
     primer = torch.from_numpy(generated_matrix[np.newaxis, :, i:i+1]).float()
 
 midi_data = decoding_to_midi(generated_matrix)

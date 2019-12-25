@@ -12,12 +12,14 @@ import time
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\NylonRNN\\"
 model_path = "models\\"
 npdata_filepath = "data\\classical_guitar_npdata\\"
+state_dict = "models\\3800318"
 try:
     list_songs = os.listdir(npdata_filepath)
 except FileNotFoundError:
     npdata_filepath = absolute_path + npdata_filepath
     model_path = absolute_path + model_path
     list_songs = os.listdir(npdata_filepath)
+    state_dict = absolute_path + state_dict
 
 np.random.seed(int(time.time()))
 
@@ -31,7 +33,7 @@ class MidiDataset(Dataset):
     def __len__(self):
         return len(self.x)
 
-def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
+def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-7):
     """
     Trains LSTM
 
@@ -43,12 +45,11 @@ def train_LSTM(model, encoded_matrices, batch_size=20, regular_param=1e-6):
     """
     loss = nn.BCELoss()
     regularization = nn.MSELoss()
-    # training_dataloader = DataLoader(midi_dataset, batch_size=batch_size)
     training_loss = np.empty((model.n_steps))
     saved_loss = 1e20
     model_name = str(np.random.randint(0, 1e7))
+    optimizer = torch.optim.Adam(model.parameters(), lr=model.learning_rate)
     for epoch in range(model.n_steps):
-        optimizer = torch.optim.SGD(model.parameters(), lr=model.learning_rate * (1 - epoch / model.n_steps), momentum=1e-3)
         begin = time.time()
         indices = np.random.choice(len(encoded_matrices), batch_size)
         model.zero_grad()
@@ -98,30 +99,8 @@ for path in list_songs:
     encoded_matrices.append(torch.from_numpy(np.load(npdata_filepath + path)[np.newaxis, :, :]).float())
     break
 
-
-# sample_beats = 16
-# sample_time_steps = 24 * sample_beats
-# long_x = []
-# long_y = []
-# for matrix in encoded_matrices:
-#     for i in range(0, matrix.size(2) - sample_time_steps - 1):
-#         long_x.append(matrix[0, :, i:i+sample_time_steps])
-#         long_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
-# long_midi_dataset = MidiDataset(long_x, long_y)
-
-# sample_beats = 1
-# sample_time_steps = 24 * sample_beats
-# small_x = []
-# small_y = []
-# for matrix in encoded_matrices:
-#     for i in range(0, matrix.size(2) - sample_time_steps - 1):
-#         small_x.append(matrix[0, :, i:i+sample_time_steps])
-#         small_y.append(matrix[0, :, i+1: i+sample_time_steps+1])
-# small_midi_dataset = MidiDataset(small_x, small_y)
-# small_midi_dataset.x = small_midi_dataset.x[:20]
-# small_midi_dataset.y = small_midi_dataset.y[:20]
-
-model = NylonRNN(50, n_steps=500000, learning_rate=1e-4)
+model = NylonRNN(50, n_steps=50000, learning_rate=1e-4)
+# model.load_state_dict(torch.load(state_dict, map_location=model.device))
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 
