@@ -10,7 +10,7 @@ primer_path = "src\\primer.npy"
 model_path = "models\\3800318"
 output_path = "midi_output\\"
 
-model = NylonRNN(50)
+model = NylonRNN(60, 50)
 beats_to_generate = 64
 
 try:

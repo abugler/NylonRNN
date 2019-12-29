@@ -8,7 +8,7 @@ This file finds the "primer matrix" for the feed_forward of the neural network
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\EtudeRNN\\"
 data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
 song_list_filepath = "data\\classical_guitar_training_set"
-primer_path = "src\\primer.npy"
+primer_path = "data\\primer.npy"
 try:
     with open(song_list_filepath, 'r') as song_list_file:
         song_list = song_list_file.readlines()

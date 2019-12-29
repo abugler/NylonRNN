@@ -12,6 +12,7 @@ Aguado_Etude_No18.mid
 Aguado_Etude_No20.mid
 Aguado_Etude_No27.mid
 Aguado_Leccion_No17.mid
+Aguado_Leccion_No20.mid
 Aguado_Leccion_No23.mid
 Aguado_Leccion_No27.mid
 Aguado_Lesson_No1.mid
@@ -70,8 +71,11 @@ Bach_Partita_No1_BWV1002_Courante-Double.mid
 Bach_Partita_No1_BWV1002_Courante.mid
 Bach_Partita_No1_BWV1002_Double_Allemande.mid
 Bach_Partita_No1_BWV1002_Sarabande-Double.mid
+Bach_Partita_No1_BWV825_Courante.mid
+Bach_Partita_No1_BWV825_Gigue.mid
 Bach_Partita_No1_BWV825_MenuetI.mid
 Bach_Partita_No2_BWV1004_Allemande.mid
+Bach_Prelude_BWV857_Louise.mid
 Bach_Prelude_BWV998.mid
 Bach_Prelude_BWV999.mid
 Bach_Two_Part_Invention_BWV779.mid
@@ -88,6 +92,8 @@ Barrios_Mangore_Estudio_Ligado_Re_mineur.mid
 Barrios_Mangore_Estudio_Sol_Menor.mid
 Barrios_Mangore_Julia_Florida.mid
 Barrios_Mangore_Minueto_do.mid
+Barrios_Mangore_Minuet_in_E.mid
+Barrios_Mangore_Prelude_Cminor.mid
 Barrios_Mangore_Preludio_E.mid
 Barrios_Mangore_Preludio_Em.mid
 Barrios_Mangore_Romanza.mid
@@ -96,6 +102,7 @@ Barrios_Mangore_Sarita.mid
 Beethoven_Freude_Sschoner_Gotterfunken.mid
 Beethoven_Minueto_Op31_No3 .mid
 Beethoven_Minuet_inG.mid
+Britten_Op70_Nocturnal_2_Molto_agitato.mid
 Britten_Op70_Nocturnal_3_Inquieto.mid
 Britten_Op70_Nocturnal_6_Sognante.mid
 Britten_Op70_Nocturnal_7_Cullante.mid
@@ -117,7 +124,9 @@ Brouwer_Etude_No7.mid
 Brouwer_Zapateado.mid
 Carcassi_Allegretto_Op5_No12.mid
 Carcassi_Caprice_Op26_No3.mid
+Carcassi_Etude_No10_Op60.mid
 Carcassi_Etude_No11_Op60.mid
+Carcassi_Etude_No13_Op60.mid
 Carcassi_Etude_No14_Op60.mid
 Carcassi_Etude_No15_Op60.mid
 Carcassi_Etude_No16_Op60.mid
@@ -132,6 +141,7 @@ Carcassi_Etude_No23_Op60.mid
 Carcassi_Etude_No25_Op60.mid
 Carcassi_Etude_No2_Op60.mid
 Carcassi_Etude_No3_Op60.mid
+Carcassi_Etude_No4_Op60.mid
 Carcassi_Etude_No5_Op60.mid
 Carcassi_Etude_No6_Op60.mid
 Carcassi_Etude_No7_Op60.mid
@@ -145,6 +155,7 @@ Carcassi_Valse_Op4_No3.mid
 Carcassi_Valse_Op4_No4.mid
 Carcassi_Valse_Op4_No6.mid
 Cardoso_24_Piezas_Sudamericanas_Bambuco.mid
+Cardoso_48_Piezas_Suite_de_los_Mita_01_Vidala.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_02_Galopa.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_03_Zamba.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_04_Rasguido_Doble.mid
@@ -154,6 +165,7 @@ Cardoso_48_Piezas_Suite_de_los_Mita_10_Chacarera.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_21_Polo_Venezolano.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_22_Aguinaldo.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_23_Albazo.mid
+Cardoso_48_Piezas_Suite_de_los_Mita_37_Milonga_Portena_Zeyne.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_38_Vals_Venezolano.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_39_Pasillo_Costarricense.mid
 Cardoso_48_Piezas_Suite_de_los_Mita_8_Huella.mid
@@ -172,10 +184,12 @@ Carulli_Prelude2.mid
 Carulli_Prelude3.mid
 Carulli_Prelude4.mid
 Carulli_Prelude5.mid
+Carulli_Prelude6.mid
 Carulli_Prelude7.mid
 Carulli_Prelude9.mid
 Carulli_Rondo.mid
 Carulli_Rondo_Op241_No10.mid
+Carulli_Sonate_Op2_3_Moderato.mid
 Carulli_Sonate_Op2_4_Andantino.mid
 Carulli_Sonate_Op2_6_Moderato.mid
 Carulli_Sonate_Op2_8_Allegro.mid
@@ -190,9 +204,11 @@ Cisneros_Na-Shi-suam.mid
 Cisneros_Norah.mid
 Cisneros_Zulay.mid
 Coste_Etude_Amajor_Op38.mid
+Coste_Etude_No12_Op38.mid
 Coste_Etude_No13_Op38.mid
 Coste_Etude_No22_Op38.mid
 Coste_Etude_No5_Op38.mid
+Coste_Etude_No7_Op38.mid
 Coste_Etude_Op38_No1.mid
 Coste_Etude_Op38_No2.mid
 Coste_Lecon_No13.mid
@@ -232,15 +248,18 @@ Coste_Valse_Op7_No4.mid
 Coste_Valse_Op7_No5.mid
 Coste_Valse_Op7_No6.mid
 Coste_Valse_Op7_No7.mid
+Coste_Valse_Op7_No8.mid
 Coste_Valse_Op7_No9.mid
 Dowland_Complaint.mid
 Dowland_Digorie_Piper's_Galliard.mid
 Dowland_Dr_Case's_Pavane.mid
 Dowland_Frog_Galliard.mid
+Dowland_Galliard.mid
 Dowland_King_of_Denmark_His_Galliard.mid
 Dowland_Mrs_White's_Nothing.mid
 Dowland_Pavana_Dminor.mid
 Dowland_Semper_Dowland.mid
+Duarte_Blackbirds_Trushes.mid
 Duarte_Bushes_Briars.mid
 Duarte_Danserie_No3_2Sarabande_folies_Op113.mid
 Duarte_Danza_Eccentrica_Op138.mid
@@ -259,7 +278,9 @@ Dyens_Lettre_Jacques_Cartier.mid
 Dyens_Lettre_soi-meme.mid
 Dyens_Lettre_Sydney.mid
 Dyens_Venezuelettre.mid
+Falla_Amor_Brujo_Circulo_Magico.mid
 Falu_Choro.mid
+Falu_Mishi.mid
 Ferranti_Ocho_Piezas_Faciles_No1.mid
 Ferranti_Ocho_Piezas_Faciles_No2.mid
 Ferranti_Ocho_Piezas_Faciles_No3.mid
@@ -267,6 +288,8 @@ Ferranti_Ocho_Piezas_Faciles_No4.mid
 Ferranti_Ocho_Piezas_Faciles_No5.mid
 Ferranti_Ocho_Piezas_Faciles_No7.mid
 Ferranti_Ocho_Piezas_Faciles_No8.mid
+Ferranti_Seis_Nocturnos_Biblicos_Op3_No6.mid
+Garoto_Desvairada.mid
 Garoto_Gente_Humilde.mid
 Garoto_Naqueles_Velhos_Tempos.mid
 GillesLouise_Impromptu_Dmineur.mid
@@ -285,10 +308,12 @@ Giuliani_Etudes_Op1_Pt3_No7.mid
 Giuliani_Etudes_Op1_Pt3_No9.mid
 Giuliani_Etudes_Op1_Pt4_No3.mid
 Giuliani_Etudes_Op1_Pt4_No4.mid
+Giuliani_Etude_No12_Op48.mid
 Giuliani_Etude_No13_Op48.mid
 Giuliani_Etude_No20_Op48.mid
 Giuliani_Etude_No24_Op48.mid
 Giuliani_Etude_No3_Op48.mid
+Giuliani_Etude_No4_Op48.mid
 Giuliani_Etude_No6_Op48.mid
 Giuliani_Etude_Op100_No11.mid
 Giuliani_Etude_Op100_No13.mid
@@ -349,6 +374,7 @@ Giuliani_Tersicore_Op147_No7.mid
 Giuliani_Tersicore_Op147_No8.mid
 Giuliani_Tersicore_Op147_No9.mid
 Giuliani_theme_variation.mid
+Gnattali_Estudo_No2.mid
 Gnattali_Estudo_No3.mid
 Gnattali_Estudo_No4.mid
 Gnattali_Estudo_No7.mid
@@ -366,6 +392,7 @@ Lauro_El_Negrito.mid
 Lauro_La_Gatica.mid
 Lauro_La_Negra.mid
 Lauro_Marabino.mid
+Lauro_Ninito_Precioso.mid
 Lauro_Nino.mid
 Lauro_Pavana.mid
 Lauro_Petronila.mid
@@ -395,6 +422,7 @@ Losy_Suite_Do_Majeur_Gigue.mid
 Machado_Estudio_No1.mid
 Mendelssohn_Canzonetta_Op12.mid
 Mertz_Cyanen_Folge_Nachtviolen_Marcia_Trio_Op5.mid
+Mertz_Gondolier_Op65_No3.mid
 Mertz_Landler.mid
 Mertz_Natcviolen_Op2_No2_Allegro.mid
 Mertz_Natcviolen_Op2_No5_alegreto_giusto.mid
@@ -404,6 +432,7 @@ Mertz_Op13_Bardenklange_No4_1Gondoliera.mid
 Mertz_Op13_Bardenklange_No5_2Gebeth.mid
 Mertz_Op4_Trois_Nocturnes_No2_2_Allegro.mid
 Mertz_Op4_Trois_Nocturnes_No3_2_vivace.mid
+Mertz_Schubert_Aufenthalt.mid
 Mertz_Schubert_Die_Post.mid
 Mertz_Tarantelle_Op13_No6.mid
 Mertz_Ungarische_Op1_No3.mid
@@ -466,6 +495,7 @@ Narvaez_Fantasia_Heft1_No1.mid
 Narvaez_Fantasia_Heft1_No6.mid
 Nazareth_Garoto.mid
 Oliva_Estudio_Fantasia.mid
+Oliva_Serenata_Postuma.mid
 Oliva_Sonata_del_Amor_Plenitude.mid
 Paco_de_Lucia_Sortilegio.mid
 Paganini_Allegretto_MS90.mid
@@ -474,6 +504,7 @@ Paganini_Caprice_No5.mid
 Paganini_Ghiribizzi_MS43_No1.mid
 Paganini_Ghiribizzi_MS43_No14.mid
 Paganini_Ghiribizzi_MS43_No2.mid
+Paganini_Ghiribizzi_MS43_No3.mid
 Paganini_Ghiribizzi_MS43_No38.mid
 Paganini_Ghiribizzi_MS43_No39.mid
 Paganini_Ghiribizzi_MS43_No4.mid
@@ -484,6 +515,7 @@ Paganini_MS84_37sonates_No13.mid
 Paganini_MS84_37sonates_No14.mid
 Paganini_MS84_37sonates_No16.mid
 Paganini_MS84_37sonates_No18.mid
+Paganini_MS84_37sonates_No19.mid
 Paganini_MS84_37sonates_No23.mid
 Paganini_MS84_37sonates_No26.mid
 Paganini_MS84_37sonates_No28.mid
@@ -507,6 +539,7 @@ Pernambuco_Estudo_No1.mid
 Pernambuco_Grauna.mid
 Pernambuco_Po_de_Mico.mid
 Pernambuco_Saudosa_Viola.mid
+Piazzola_Cinco_Piezzas_No4_Triston.mid
 Ponce_Ballet.mid
 Ponce_Prelude_No3.mid
 Ponce_Prelude_No4.mid
@@ -516,6 +549,7 @@ Ponce_Scherzino_mexicano.mid
 Ponce_Sonata_clasica_Andante.mid
 Ponce_Sonata_No1_Allegretto.mid
 Ponce_Suite_D_5.Gigue.mid
+Ponce_Suite_la_Style_Weiss_1Preludio.mid
 Ponce_Suite_la_Style_Weiss_2Allemanda.mid
 Ponce_Suite_la_Style_Weiss_5Giga.mid
 Ponce_Valse.mid
@@ -526,6 +560,7 @@ Pujol_El_Abejorro.mid
 Pujol_Etude_No6.mid
 Pujol_Methode_Vol3_Estudio_No32_Nocturno.mid
 Pujol_Prelude1.mid
+Pujol_Prelude2.mid
 Purcell_Ground.mid
 Purcell_Hornpipe.mid
 Purcell_Minueto_No1.mid
@@ -538,14 +573,23 @@ Reiss_Dois_Destinos.mid
 Reiss_Se_Ela_Purguntar.mid
 Reis_Eterna_Saudade.mid
 Reis_Subindo_Ao_Ceu.mid
+Reis_Ultima_Inspiracao.mid
 Robinson_Grisse_Delight.mid
 Robinson_Merry_Melancholie.mid
 Robinson_Robinsons_May.mid
 Rodrigo_Pequena_Sevillana.mid
+Romero_Cinco_Preludios_No1_Romantico.mid
+Romero_Maestros_No3_Baile.mid
 Romero_Suite_Andaluza_No2_Alegrias.mid
 Sabicas_Castellana.mid
+Sagreras_El_Pinpollito_Op27.mid
 Sagreras_Estilo_Criollo_No2_Op11.mid
+Sagreras_Estilo_Criollo_No4_Op11.mid
+Sagreras_Estudio_No10_Op68.mid
+Sagreras_Estudio_No1_Sonatina_Op23.mid
+Sagreras_Estudio_No3_Sonatina_Op28.mid
 Sagreras_Estudio_No4_Sonatina_Op31.mid
+Sagreras_Estudio_No6_Sonatina_Op46.mid
 Sagreras_Estudio_No7_Sonatina_Op47.mid
 Sagreras_Estudio_No8_Sonatina_Op48.mid
 Sagreras_Filigrana_Vals_Op44.mid
@@ -560,7 +604,9 @@ Sagreras_Segundas_Lecciones_Vol2_No7.mid
 Sagreras_Segundas_Lecciones_Vol2_No8.mid
 Sagreras_Terceras_Lecciones_Vol3_No10.mid
 Sagreras_Terceras_Lecciones_Vol3_No11.mid
+Sagreras_Terceras_Lecciones_Vol3_No12.mid
 Sagreras_Terceras_Lecciones_Vol3_No18.mid
+Sagreras_Terceras_Lecciones_Vol3_No22.mid
 Sagreras_Terceras_Lecciones_Vol3_No37.mid
 Sagreras_Terceras_Lecciones_Vol3_No7.mid
 Sagreras_Terceras_Lecciones_Vol3_No8.mid
@@ -569,17 +615,20 @@ Sagreras_Tres_Piezas_Faciles_1_Marcha_Op19.mid
 Sagreras_Tres_Piezas_Faciles_3_Nostalgia_Op19.mid
 Sagreras_Zamba_Op10.mid
 Sainz_de_la_MazaE_Azotea.mid
+Sainz_de_la_MazaE_Campanas_Alba.mid
 Sainz_de_la_MazaE_Darbon.mid
 Sainz_de_la_MazaE_Platero_No5_Paseo.mid
 Sainz_de_la_MazaE_Platero_No8_Platero_Tierra.mid
 Sainz_de_la_MazaE_Tortuga.mid
 Sainz_de_la_MazaR_Petenera.mid
+Sainz_de_la_MazaR_Rondena.mid
 Sainz_de_la_MazaR_Vito.mid
 Santiago_de_Murcia_Cancion_O_Tocata.mid
 Sanz_Canarios.mid
 Sanz_Cavaleria_Napoles.mid
 Sanz_Danza_Hachas.mid
 Sanz_Espagnoletta.mid
+Sanz_Gallarda.mid
 Sanz_J'acaras.mid
 Sanz_Minona_Cataluna.mid
 Sanz_Preludio.mid
@@ -641,6 +690,7 @@ Sor_Exercices_Op35_No1.mid
 Sor_Exercices_Op35_No11.mid
 Sor_Exercices_Op35_No14.mid
 Sor_Exercices_Op35_No18.mid
+Sor_Exercices_Op35_No19.mid
 Sor_Exercices_Op35_No2.mid
 Sor_Exercices_Op35_No20.mid
 Sor_Exercices_Op35_No21.mid
@@ -672,6 +722,7 @@ Tansman_Cavatina_Mov2_Sarabande.mid
 Tansman_Cavatina_Mov4_Barcarolle.mid
 Tansman_Suite_Polonica_Entree.mid
 Tansman_Suite_Polonico_Alla_Polacca.mid
+Tansman_Suite_Polonico_Kolysanka_No2.mid
 Tansman_Suite_Polonico_Oberek.mid
 Tarrega_Endecha.mid
 Tarrega_Estudio_A.mid
@@ -687,16 +738,20 @@ Villa-Lobos_Etude_No2.mid
 Villa-Lobos_Etude_no5.mid
 Villa-Lobos_Gavota-Choro.mid
 Villa-Lobos_Mazurka-Choro2.mid
+Vinas_Alom.mid
 Vinas_Capullos_de_Abril_1_Pasa_Calle.mid
 Vinas_Capullos_de_Abril_2_Vals.mid
 Vinas_Capullos_de_Abril_6_Marcha.mid
 Vinas_Fantasia_Capricho_1_Capricho.mid
 Vinas_Fantasia_Capricho_4_Final.mid
+Visee_Suite_A_mineur_Bourree.mid
+Visee_Suite_A_mineur_Courante.mid
 Visee_Suite_A_mineur_Gavotte1.mid
 Visee_Suite_A_mineur_Gavotte2.mid
 Visee_Suite_A_mineur_Gigue.mid
 Visee_Suite_A_mineur_Sarabande.mid
 Visee_Suite_in_Dm_Allemande.mid
+Visee_Suite_in_Dm_Bouree.mid
 Visee_Suite_in_Dm_Courante.mid
 Visee_Suite_in_Dm_Gavotte.mid
 Visee_Suite_in_Dm_Gigue.mid
@@ -704,6 +759,7 @@ Weiss_Allemande.mid
 Weiss_London_Sonata_No2_Gigue.mid
 Weiss_London_Sonata_No2_Menuet.mid
 Weiss_Prelude.mid
+Weiss_Presto.mid
 Weiss_Suite 3.5_Menuet.mid
 Weiss_Suite_No2_6Menuet2.mid
 York_Sunburst.mid

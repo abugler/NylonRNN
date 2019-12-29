@@ -6,6 +6,18 @@ E2 = 40
 # B5 is the highest fretted note on a standard classical guitar
 B5 = 83
 
+# A beat is 24 timesteps
+beat_length = 24
+
+# Generates the beat matrix template
+beat_signals = [3, 4, 6, 8, 12, 24, 36, 48, 72, 96]
+beat_template = np.zeros((len(beat_signals), max(beat_signals)))
+for i in range(len(beat_signals)):
+    curr = 0
+    while curr < beat_template.shape[1]:
+        beat_template[i, 0] = 1
+        curr += beat_signals[i]
+
 def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     """
     The encoding for this data is specific to solo classical guitar pieces with no pinch harmonics nor percussive elements.
@@ -24,41 +36,63 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     Each timestep is 1/24 of a beat.  This is to account for both notes that last 1/8 of a beat, and notes that last 1/3 of a beat.
     As most songs' shortest notes are roughly either 1/6 or 1/8 of a beat, this will account for both.
 
-    Midi_data will be segmented by tempo. Sections less than 8 beats of constant tempo will be ignored.
+    Midi_data will be segmented by tempo and Time Signature. Sections less than 4 beats of constant tempo will be ignored.
+    In addition to this, the number of timesteps into the song will be measured, so the beat matrix can be accurately aligned with it
 
     :param midi_data: A pretty_midi.PrettyMidi object to be encoded
     :param tempo: Tempo of pretty_midi object.  Default is 100
     :return: encoded_matrices: A list of encoded matrices
     """
+    # First we want to find the locations in the midi track where the time signature changes
     beats_min = 4
     tempo_change_times, tempi = midi_data.get_tempo_changes()
-    if tempo_change_times is None:
+    time_signature_changes = sorted(midi_data.time_signature_changes, key=lambda sign: sign.time)
+    changes = []
+    last_tempo = midi_data.estimate_tempo()
+    i = 0
+    j = 0
+    while i + j < len(time_signature_changes) + tempo_change_times.shape[0]:
+        if j == len(time_signature_changes) or \
+                (i != tempo_change_times.shape[0] and
+                 time_signature_changes[j].time >= tempo_change_times[i]):
+            next_change = (tempo_change_times[i], tempi[i])
+            last_tempo = tempi[i]
+            i += 1
+        else:
+            next_change = (time_signature_changes[j].time, last_tempo)
+            j += 1
+        changes.append(next_change)
+
+    # After we do so, we need to find the range vectors to pass into the function "PrettyMIDI.get_piano_roll" for the given
+    # range and tempo
+    if changes is None:
+        # In my ancedotal observations, this function is not the most accurate, so we only use it if tempo data is not provided.
         tempo = midi_data.estimate_tempo()
-        range_vectors = [np.arange(0, midi_data.get_end_time(), 1 / (24 * tempo))]
+        range_vectors = [np.arange(0, midi_data.get_end_time(), 1 / (beat_length * tempo))]
         range_tempi = [tempo]
     else:
         range_vectors = []
         range_tempi = []
-        for i in range(len(tempi)):
-            start_time = tempo_change_times[i]
-            end_time = tempo_change_times[i + 1] if i < len(tempi) - 1 else midi_data.get_end_time()
-            vector = np.arange(start_time, end_time, 1 / (tempi[i] / 60 * 24))
-            if vector.shape[0] > beats_min * 24:
+        for i in range(len(changes)):
+            start_time = changes[i][0]
+            end_time = changes[i + 1][0] if i < len(changes) - 1 else midi_data.get_end_time()
+            vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))
+            if vector.shape[0] > beats_min * beat_length:
                 range_vectors.append(vector)
-                range_tempi.append(tempi[i])
+                range_tempi.append(changes[i][1])
 
     # This will only work with midi data with a single instrument
-    def find_pluck_matrix(midi_data: pretty_midi.PrettyMIDI, vector: np.ndarray, piano_roll: np.ndarray, tempo: int):
-        pluck_matrix = np.zeros((6, vector.shape[0]))
-        section_notes = lambda _note:_note.start >= vector[0] and _note.end <= vector[-1] + tempo / 60 / 24
+    def find_attack_matrix(midi_data: pretty_midi.PrettyMIDI, vector: np.ndarray, piano_roll: np.ndarray, tempo: int):
+        attack_matrix = np.zeros((6, vector.shape[0]))
+        section_notes = lambda _note:_note.start >= vector[0] and _note.start <= vector[-1]
         notes = sorted(filter(section_notes, midi_data.instruments[0].notes), key=lambda x: x.pitch)
         section_start = vector[0]
         for note in notes:
-            timestep = int(round((note.start - section_start) / 60 * tempo * 24, 0))
+            timestep = int(round((note.start - section_start) / 60 * tempo * beat_length, 0))
 
             simultaneous_notes = np.sum(piano_roll[0:(note.pitch - E2), timestep])
-            pluck_matrix[simultaneous_notes, timestep] = 1
-        return pluck_matrix
+            attack_matrix[simultaneous_notes, timestep] = 1
+        return attack_matrix
 
     encoded_matrices = []
     instrument = midi_data.instruments[0]
@@ -85,6 +119,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             inc += 1
         return midi_matrix
 
+    timesteps_passed = 0
     for vector, tempo in zip(range_vectors, range_tempi):
         # Right now, midi_matrix is a matrix of velocities.
         # Let's change this so midi matrix is a matrix of whether the note is played or not
@@ -95,11 +130,12 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             continue
 
         midi_matrix = one_hot(midi_matrix)
+        attack_matrix = find_attack_matrix(midi_data, vector, midi_matrix, tempo)
 
-        pluck_matrix = find_pluck_matrix(midi_data, vector, midi_matrix, tempo)
         encoded_matrices.append(
-            np.append(midi_matrix, pluck_matrix, axis=0)
+            (np.append(midi_matrix,attack_matrix,axis=0), timesteps_passed)
         )
+        timesteps_passed += midi_matrix.shape[1]
 
     return encoded_matrices
 
@@ -111,11 +147,12 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     :param time_signature:
     :return midi_data:
     """
+    # Trim out beat matrix
     approx_to_zero = np.vectorize(lambda x: 1 if np.random.random() < x else 0)
-    # Split encoded_matrix into piano_roll and pluck_matrix
+    # Split encoded_matrix into piano_roll and attack_matrix
     piano_roll = approx_to_zero(encoded_matrix[:B5 - E2 + 1, :])
-    pluck_matrix = approx_to_zero(encoded_matrix[-6:, :])
-    plucks_per_timestep = pluck_matrix.sum(axis=0)
+    attack_matrix = approx_to_zero(encoded_matrix[-6:, :])
+    plucks_per_timestep = attack_matrix.sum(axis=0)
     pluck_nonzero = plucks_per_timestep.nonzero()[0]
 
     midi_data = pretty_midi.PrettyMIDI(initial_tempo=tempo)
@@ -125,10 +162,10 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     )
     midi_data.instruments.append(pretty_midi.Instrument(24, name="Guitar"))
 
-    timesteps_per_second = tempo / 60 * 24
+    timesteps_per_second = tempo / 60 * beat_length
 
     for timestep in reversed(pluck_nonzero):
-        plucks = np.array(pluck_matrix[:, timestep].nonzero(), dtype=np.int32).flatten()
+        plucks = np.array(attack_matrix[:, timestep].nonzero(), dtype=np.int32).flatten()
         notes_played = np.array(piano_roll[:, timestep].nonzero(), dtype=np.int32).flatten()
         try:
             pitches = notes_played[plucks]
@@ -142,7 +179,7 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
                         key=lambda note: note.start).start \
                          * timesteps_per_second)
             else:
-                next_pluck = 1e10
+                next_pluck = 1e20
             note_timesteps = 1
             while timestep + note_timesteps < piano_roll.shape[1] \
                   and timestep + note_timesteps < next_pluck \
@@ -153,3 +190,19 @@ def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
             midi_data.instruments[0].notes.append(pretty_midi.Note(127, pitch + E2, begin, begin + note_length))
 
     return midi_data
+
+def find_beat_matrix(midi_matrix, starting_timestep):
+    """
+    Returns a beat matrix corresponding to the midi_matrix
+    TODO: Explain this more
+    :param midi_matrix: generated midi_matrix
+    :return: beat_matrix
+    """
+
+    timesteps = midi_matrix.shape[1]
+    template_length = beat_template.shape[1]
+    starting_timestep = starting_timestep % template_length
+    beat_matrix = np.empty((beat_template.shape[0], 0))
+    for i in range(int((timesteps + starting_timestep) / template_length) + 1):
+        beat_matrix = np.append(beat_matrix, beat_template, axis=1)
+    return beat_matrix[:, starting_timestep:timesteps + starting_timestep]

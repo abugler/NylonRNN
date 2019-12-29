@@ -2,14 +2,14 @@ import torch.nn as nn
 import torch
 
 class NylonRNN(torch.nn.Module):
-    def __init__(self, input_dimensions, n_steps=40, n_hidden=50, n_layers=64, dropout=.2, learning_rate=.003):
+    def __init__(self, input_dimensions, output_dimensions, n_steps=40, n_hidden=50, n_layers=64, dropout=.2):
         super().__init__()
         self.dropout = dropout
         self.n_layers = n_layers
         self.n_hidden = n_hidden
         self.n_steps = n_steps
-        self.learning_rate = learning_rate
         self.input_dimensions = input_dimensions
+        self.output_dimensions = output_dimensions
 
         self.device = None
 
@@ -20,7 +20,7 @@ class NylonRNN(torch.nn.Module):
                     num_layers=n_layers, batch_first=False, dropout=dropout)
 
         # Readout Layer
-        self.fc = nn.Linear(n_hidden, self.input_dimensions)
+        self.fc = nn.Linear(n_hidden, self.output_dimensions)
 
         self.activation = torch.sigmoid
 
@@ -62,4 +62,3 @@ class NylonRNN(torch.nn.Module):
 
         out = out.permute(1, 2, 0)
         return out, hn, cn
-
