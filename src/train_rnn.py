@@ -71,7 +71,8 @@ def train_LSTM(model, features, targets, batch_size=20, regular_param=1e-8, lear
               (epoch, time.time() - begin, batch_loss.item()))
         if batch_loss.item() < saved_loss:
             print("Writing model")
-            torch.save(model.state_dict(), model_path +model_name)
+            saved_loss = batch_loss.item()
+            torch.save(model.state_dict(), model_path + model_name)
     return model, training_loss
 
 training_features = []
@@ -88,12 +89,12 @@ for i in range(len(list_songs)):
     break
 
 
-model = NylonRNN(60, 50, n_steps=50000)
+model = NylonRNN(60, 50, n_steps=10000)
 # model.load_state_dict(torch.load(state_dict, map_location=model.device))
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 
-model, training_loss = train_LSTM(model, training_features, training_targets, batch_size=1, learning_rate=1e-3)
+model, training_loss = train_LSTM(model, training_features, training_targets, batch_size=1, learning_rate=1e-4)
 
 plt.plot(np.arange(0, model.n_steps), training_loss)
 plt.title("BCELoss over epoch")
