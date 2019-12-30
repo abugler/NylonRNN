@@ -28,13 +28,20 @@ def train_LSTM(model, features, targets, batch_size=20, regular_param=1e-8, lear
                loss=nn.BCELoss(), regularization=nn.MSELoss(), model_name=str(np.random.randint(0, 1e7)),
                optimizer_algorithm=torch.optim.Adam):
     """
-    Trains LSTM
+    Trains LSTM given the following parameters
 
-    :param model: LSTM model to train
-    :param training_dataset: training dataset
+    :param model: NylonRNN model to be trained
+    :param training_dataset: A list of numpy array objects representing the midi files, segmented by tempo and
+    time signature. All numpy arrays in this list should have the beat matrix already appended to it on axis 0.
     :param lr: Learning Rate for optimizer
     :param batch_size: Batch Size for data loader
-    :return:
+    :param regular_param: Coefficient to multiply the output of the regularization by
+    :param loss: Loss function to pass in. Loss function ideally be in the same format as a PyTorch loss function
+    :param regularization: Loss function for regularization.  Ideally should be in the same format as a PyTorch loss function
+    :param model_name: Filename for the trained model
+    :param optimizer_algorithm: A torch.optim.* object.
+    :return model: Trained model
+    :return training_loss: Loss of the training set by epoch
     """
     training_loss = np.empty((model.n_steps))
     saved_loss = 1e20
@@ -85,8 +92,6 @@ for i in range(len(list_songs)):
     target = torch.from_numpy(next_array[np.newaxis, :, 1:]).float()
     training_features.append(feature)
     training_targets.append(target)
-    # Remove this break when training on entire dataset
-    break
 
 
 model = NylonRNN(60, 50, n_steps=10000)
@@ -94,7 +99,8 @@ model = NylonRNN(60, 50, n_steps=10000)
 if torch.cuda.is_available():
     model.set_device('cuda:0')
 
-model, training_loss = train_LSTM(model, training_features, training_targets, batch_size=1, learning_rate=1e-4)
+model, training_loss = train_LSTM(model, training_features, training_targets,
+                                  batch_size=1, learning_rate=1e-3, regularization=1e-15)
 
 plt.plot(np.arange(0, model.n_steps), training_loss)
 plt.title("BCELoss over epoch")

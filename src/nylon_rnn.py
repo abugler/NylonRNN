@@ -2,7 +2,13 @@ import torch.nn as nn
 import torch
 
 class NylonRNN(torch.nn.Module):
-    def __init__(self, input_dimensions, output_dimensions, n_steps=40, n_hidden=50, n_layers=64, dropout=.2):
+    """
+    NylonRNN is the LSTM network used to generate songs to for classical guitar.
+    Default architecture includes 60 input dimensions, 44 dimensions to represent a piano roll,
+    6 dimensions to represent the attack matrix, and 10 for beat signaling, 64 hidden LSTM layers consisting of
+    50 hidden units per layer, with a dropout of .2, and a fully connected output layer with sigmoid activation
+    """
+    def __init__(self, input_dimensions, output_dimensions, n_steps=30000, n_hidden=50, n_layers=64, dropout=.2):
         super().__init__()
         self.dropout = dropout
         self.n_layers = n_layers
@@ -24,9 +30,10 @@ class NylonRNN(torch.nn.Module):
 
         self.activation = torch.sigmoid
 
+    # Switches network components to cuda
     def set_device(self, device):
         self.device = device
-        if device == "cuda:0":
+        if device != "cpu":
             self.lstm = self.lstm.cuda()
             self.fc = self.fc.cuda()
             print("The device is cuda")
@@ -37,7 +44,7 @@ class NylonRNN(torch.nn.Module):
         :param x: A tensor of shape (batch_size, self.input_dimensions, timesteps)
         :param timesteps: Number of total timesteps that should be outputed
         :return out: A tensor of shape (batch_size, self.input_dimensions, timesteps).
-        Can be coded to a PrettyMIDI object with the decoding_to_midi
+        Can be coded to a PrettyMIDI object with the encoding.decoding_to_midi function
         """
 
         # reorder x
@@ -52,7 +59,8 @@ class NylonRNN(torch.nn.Module):
         hn = hn.detach()
         cn = cn.detach()
 
-        if self.device == 'cuda:0':
+        # transfers hn, cn, and x to cuda, if device is cuda
+        if self.device != 'cpu':
             hn = hn.cuda()
             cn = cn.cuda()
             x = x.cuda()

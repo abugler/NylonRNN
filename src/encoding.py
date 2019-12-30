@@ -15,7 +15,7 @@ beat_template = np.zeros((len(beat_signals), max(beat_signals)))
 for i in range(len(beat_signals)):
     curr = 0
     while curr < beat_template.shape[1]:
-        beat_template[i, 0] = 1
+        beat_template[i, curr] = 1
         curr += beat_signals[i]
 
 def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
@@ -76,7 +76,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
         for i in range(len(changes)):
             start_time = changes[i][0]
             end_time = changes[i + 1][0] if i < len(changes) - 1 else midi_data.get_end_time()
-            vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))
+            vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))[:-1]
             if vector.shape[0] > beats_min * beat_length:
                 range_vectors.append(vector)
                 range_tempi.append(changes[i][1])
