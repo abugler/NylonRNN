@@ -1,4 +1,4 @@
-from encoding import decoding_to_midi, encoding_to_LSTM
+from encoding import decoding_to_midi, encoding_to_LSTM, find_beat_matrix
 from nylon_rnn import NylonRNN
 import numpy as np
 import torch
@@ -29,10 +29,10 @@ now = datetime.datetime.now()
 np.random.seed(int(now.microsecond * now.second ** 2))
 # random_row = np.random.randint(0, primer_matrix.shape[1] / 24)
 random_row = 0
-primer_np = primer_matrix[np.newaxis, :, random_row:random_row+1]
-primer = torch.from_numpy(primer_np).float()
-
 generated_matrix = np.empty((50, beats_to_generate * 24))
+beat_matrix = find_beat_matrix(generated_matrix, 0)
+primer_np = np.append(primer_matrix[np.newaxis, :, random_row:random_row+1], beat_matrix[np.newaxis, :, 0:1])
+primer = torch.from_numpy(primer_np).float()
 generated_matrix[:, 0:1] = primer_np[0, :, :]
 
 # init hidden state
@@ -47,7 +47,7 @@ for i in range(1, (beats_to_generate) * 24 - 1):
     out = out.detach().numpy()
     generated_matrix[0:44, i + 1] = approx_to_zero(out[0, 0:44, -1])
     generated_matrix[44:50, i + 1] = approx_to_zero(out[0, 44:50, -1])
-    primer = torch.from_numpy(generated_matrix[np.newaxis, :, i:i+1]).float()
+    primer = torch.from_numpy(np.append(generated_matrix[np.newaxis, :, i:i+1], beat_matrix[np.newaxis, :, i:i+1])).float()
 
 midi_data = decoding_to_midi(generated_matrix)
 midi_data.write(output_path + str(now.date()) + '_' + str(np.random.randint(0, 1e8)) + ".mid")
