@@ -98,9 +98,11 @@ model = NylonRNN(60, 50, n_steps=10000)
 # model.load_state_dict(torch.load(state_dict, map_location=model.device))
 if torch.cuda.is_available():
     model.set_device('cuda:0')
+else:
+    model.set_device('cpu')
 
 model, training_loss = train_LSTM(model, training_features, training_targets,
-                                  batch_size=1, learning_rate=1e-3, regularization=1e-15)
+                                  batch_size=1, learning_rate=1e-3, regular_param=1e-15)
 
 plt.plot(np.arange(0, model.n_steps), training_loss)
 plt.title("BCELoss over epoch")

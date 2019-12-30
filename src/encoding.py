@@ -202,6 +202,8 @@ def find_beat_matrix(midi_matrix, starting_timestep):
     timesteps = midi_matrix.shape[1]
     template_length = beat_template.shape[1]
     starting_timestep = starting_timestep % template_length
+    while starting_timestep % 6 != 0 and starting_timestep % 4 != 0:
+        starting_timestep += 1
     beat_matrix = np.empty((beat_template.shape[0], 0))
     for i in range(int((timesteps + starting_timestep) / template_length) + 1):
         beat_matrix = np.append(beat_matrix, beat_template, axis=1)
