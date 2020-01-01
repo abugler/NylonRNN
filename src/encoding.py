@@ -18,7 +18,7 @@ for i in range(len(beat_signals)):
         beat_template[i, curr] = 1
         curr += beat_signals[i]
 
-def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
+def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI, time_segments=False):
     """
     The encoding for this data is specific to solo classical guitar pieces with no pinch harmonics nor percussive elements.
 
@@ -57,8 +57,6 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             attack_matrix[simultaneous_notes, timestep] = 1
         return attack_matrix
 
-    instrument = midi_data.instruments[0]
-
     def adjust_end_times(instrument, inc):
         for note in instrument.notes:
             note.end -= inc
@@ -83,7 +81,7 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
 
     one_hot = np.vectorize(lambda x: np.int(x != 0))
 
-    def from_vector_to_matrix(vector: np.ndarray, tempo: int):
+    def from_vector_to_matrix(vector: np.ndarray, tempo: int, instrument: pretty_midi.Instrument):
         # Right now, midi_matrix is a matrix of velocities.
         # Let's change this so midi matrix is a matrix of whether the note is played or not
         midi_matrix = one_hot(instrument.get_piano_roll(times=vector)[E2:B5 + 1, :])
@@ -124,11 +122,12 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     curr_ts = 0
     ts_passed = []
     encoded_matrices = []
+    instrument = midi_data.instruments[0]
     # After we do so, we need to find the range vectors to pass into the function "PrettyMIDI.get_piano_roll" for the given
     # range and tempo
     if changes is None:
         encoded_matrices.append(from_vector_to_matrix(
-            np.arange(0, midi_data.get_end_time(), 1 / (beat_length * last_tempo)), last_tempo))
+            np.arange(0, midi_data.get_end_time(), 1 / (beat_length * last_tempo)), last_tempo, instrument))
         ts_passed.append(0)
     else:
         for i in range(len(changes)):
@@ -136,8 +135,15 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             end_time = changes[i + 1][0] if i < len(changes) - 1 else midi_data.get_end_time()
             vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))[:-1]
             if vector.shape[0] > beats_min * beat_length:
-                encoded_matrices.append(from_vector_to_matrix(vector, changes[i][1]))
-                ts_passed.append(curr_ts)
+                next_matrix = from_vector_to_matrix(vector, changes[i][1], instrument)
+                # In the case where a tempo change and a time signature change occur at the same time, the
+                # Time signature change must appear after the tempo change, since we will always append
+                # to matrices where only the tempo is different, but not so for the time signature
+                if encoded_matrices and (not time_segments and not changes[i][2]) or changes[i][2]:
+                    encoded_matrices[-1] = np.append(encoded_matrices[-1], next_matrix, axis=1)
+                else:
+                    encoded_matrices.append(next_matrix)
+                    ts_passed.append(curr_ts)
             curr_ts += vector.shape[0]
 
     return zip(encoded_matrices, ts_passed)

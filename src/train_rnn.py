@@ -80,35 +80,33 @@ def train_LSTM(model, features, targets, batch_size=20, regular_param=1e-8, lear
             print("Writing model")
             saved_loss = batch_loss.item()
             torch.save(model.state_dict(), model_path + model_name)
-    return model, training_loss
+    return model, training_loss, model_name
 
-training_features = []
-training_targets = []
-beginning_ts = np.load(timestep_path)
-for i in range(len(list_songs)):
-    if i == 46:
-        print()
-    next_array = np.load(npdata_filepath + list_songs[i])
-    next_beat = find_beat_matrix(next_array, beginning_ts[i])
-    feature = torch.from_numpy(np.append(next_array, next_beat, axis=0)[np.newaxis, :, :-1]).float()
-    target = torch.from_numpy(next_array[np.newaxis, :, 1:]).float()
-    training_features.append(feature)
-    training_targets.append(target)
-
-
-model = NylonRNN(60, 50, n_steps=10000)
-# model.load_state_dict(torch.load(state_dict, map_location=model.device))
-if torch.cuda.is_available():
-    model.set_device('cuda:0')
-else:
-    model.set_device('cpu')
-
-model, training_loss = train_LSTM(model, training_features, training_targets,
-                                  batch_size=1, learning_rate=1e-3, regular_param=1e-15)
-
-plt.plot(np.arange(0, model.n_steps), training_loss)
-plt.title("BCELoss over epoch")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.show()
+# training_features = []
+# training_targets = []
+# beginning_ts = np.load(timestep_path)
+# for i in range(len(list_songs)):
+#     next_array = np.load(npdata_filepath + list_songs[i])
+#     next_beat = find_beat_matrix(next_array, beginning_ts[i])
+#     feature = torch.from_numpy(np.append(next_array, next_beat, axis=0)[np.newaxis, :, :-1]).float()
+#     target = torch.from_numpy(next_array[np.newaxis, :, 1:]).float()
+#     training_features.append(feature)
+#     training_targets.append(target)
+#
+#
+# model = NylonRNN(60, 50, n_steps=10000)
+# # model.load_state_dict(torch.load(state_dict, map_location=model.device))
+# if torch.cuda.is_available():
+#     model.set_device('cuda:0')
+# else:
+#     model.set_device('cpu')
+#
+# model, training_loss, model_name = train_LSTM(model, training_features, training_targets,
+#                                   batch_size=1, learning_rate=1e-3, regular_param=1e-15)
+#
+# plt.plot(np.arange(0, model.n_steps), training_loss)
+# plt.title("BCELoss over epoch")
+# plt.xlabel("Epoch")
+# plt.ylabel("Loss")
+# plt.savefig(model_name + ".png")
 

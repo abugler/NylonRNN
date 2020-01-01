@@ -1,6 +1,7 @@
 from encoding import encoding_to_LSTM
 import pretty_midi
 import numpy as np
+import os
 
 absolute_path = "C:\\Users\\Andreas\\Documents\\CS397Pardo\\Project\\NylonRNN\\"
 data_path = "data\\Classical_Guitar_classicalguitarmidi.com_MIDIRip\\"
@@ -18,12 +19,20 @@ except FileNotFoundError:
     with open(song_list_filepath, 'r') as song_list_file:
         song_list = ''.join(song_list_file.read()).split('\n')
 
+
+# Removes all files from the encoding folder
+for file in os.listdir(encode_path):
+    path = os.path.join(encode_path, file)
+    try:
+        if os.path.isfile(path):
+            os.unlink(path)
+    except Exception as e:
+        print(e)
+
 iter = 0
 starting_timesteps = []
 for path in song_list:
     midi_data = pretty_midi.PrettyMIDI(data_path + path)
-    if iter == 46:
-        print()
     for matrix, timestep in encoding_to_LSTM(midi_data):
         np.save(encode_path + str(iter) + ".npy", matrix)
         starting_timesteps.append(timestep)
