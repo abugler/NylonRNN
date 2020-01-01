@@ -22,6 +22,8 @@ iter = 0
 starting_timesteps = []
 for path in song_list:
     midi_data = pretty_midi.PrettyMIDI(data_path + path)
+    if iter == 46:
+        print()
     for matrix, timestep in encoding_to_LSTM(midi_data):
         np.save(encode_path + str(iter) + ".npy", matrix)
         starting_timesteps.append(timestep)

@@ -86,6 +86,8 @@ training_features = []
 training_targets = []
 beginning_ts = np.load(timestep_path)
 for i in range(len(list_songs)):
+    if i == 46:
+        print()
     next_array = np.load(npdata_filepath + list_songs[i])
     next_beat = find_beat_matrix(next_array, beginning_ts[i])
     feature = torch.from_numpy(np.append(next_array, next_beat, axis=0)[np.newaxis, :, :-1]).float()

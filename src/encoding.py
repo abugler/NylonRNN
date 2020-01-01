@@ -43,48 +43,11 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
     :param tempo: Tempo of pretty_midi object.  Default is 100
     :return: encoded_matrices: A list of encoded matrices
     """
-    # First we want to find the locations in the midi track where the time signature changes
-    beats_min = 4
-    tempo_change_times, tempi = midi_data.get_tempo_changes()
-    time_signature_changes = sorted(midi_data.time_signature_changes, key=lambda sign: sign.time)
-    changes = []
-    last_tempo = midi_data.estimate_tempo()
-    i = 0
-    j = 0
-    while i + j < len(time_signature_changes) + tempo_change_times.shape[0]:
-        if j == len(time_signature_changes) or \
-                (i != tempo_change_times.shape[0] and
-                 time_signature_changes[j].time >= tempo_change_times[i]):
-            next_change = (tempo_change_times[i], tempi[i])
-            last_tempo = tempi[i]
-            i += 1
-        else:
-            next_change = (time_signature_changes[j].time, last_tempo)
-            j += 1
-        changes.append(next_change)
-
-    # After we do so, we need to find the range vectors to pass into the function "PrettyMIDI.get_piano_roll" for the given
-    # range and tempo
-    if changes is None:
-        # In my ancedotal observations, this function is not the most accurate, so we only use it if tempo data is not provided.
-        tempo = midi_data.estimate_tempo()
-        range_vectors = [np.arange(0, midi_data.get_end_time(), 1 / (beat_length * tempo))]
-        range_tempi = [tempo]
-    else:
-        range_vectors = []
-        range_tempi = []
-        for i in range(len(changes)):
-            start_time = changes[i][0]
-            end_time = changes[i + 1][0] if i < len(changes) - 1 else midi_data.get_end_time()
-            vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))[:-1]
-            if vector.shape[0] > beats_min * beat_length:
-                range_vectors.append(vector)
-                range_tempi.append(changes[i][1])
 
     # This will only work with midi data with a single instrument
     def find_attack_matrix(midi_data: pretty_midi.PrettyMIDI, vector: np.ndarray, piano_roll: np.ndarray, tempo: int):
         attack_matrix = np.zeros((6, vector.shape[0]))
-        section_notes = lambda _note:_note.start >= vector[0] and _note.start <= vector[-1]
+        section_notes = lambda _note: _note.start >= vector[0] and _note.start <= vector[-1]
         notes = sorted(filter(section_notes, midi_data.instruments[0].notes), key=lambda x: x.pitch)
         section_start = vector[0]
         for note in notes:
@@ -94,7 +57,6 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             attack_matrix[simultaneous_notes, timestep] = 1
         return attack_matrix
 
-    encoded_matrices = []
     instrument = midi_data.instruments[0]
 
     def adjust_end_times(instrument, inc):
@@ -119,25 +81,66 @@ def encoding_to_LSTM(midi_data: pretty_midi.PrettyMIDI):
             inc += 1
         return midi_matrix
 
-    timesteps_passed = 0
-    for vector, tempo in zip(range_vectors, range_tempi):
+    one_hot = np.vectorize(lambda x: np.int(x != 0))
+
+    def from_vector_to_matrix(vector: np.ndarray, tempo: int):
         # Right now, midi_matrix is a matrix of velocities.
         # Let's change this so midi matrix is a matrix of whether the note is played or not
-        one_hot = np.vectorize(lambda x: np.int(x != 0))
         midi_matrix = one_hot(instrument.get_piano_roll(times=vector)[E2:B5 + 1, :])
         midi_matrix = overlap_check(instrument, midi_matrix)
         if midi_matrix is None:
-            continue
+            return
 
         midi_matrix = one_hot(midi_matrix)
         attack_matrix = find_attack_matrix(midi_data, vector, midi_matrix, tempo)
 
-        encoded_matrices.append(
-            (np.append(midi_matrix,attack_matrix,axis=0), timesteps_passed)
-        )
-        timesteps_passed += midi_matrix.shape[1]
+        return np.append(midi_matrix, attack_matrix, axis=0)
 
-    return encoded_matrices
+
+    # First we want to find the locations in the midi track where the time signature changes
+    beats_min = 4
+    tempo_change_times, tempi = midi_data.get_tempo_changes()
+    time_signature_changes = sorted(midi_data.time_signature_changes, key=lambda sign: sign.time)
+    # Changes marks every portion where either the tempo or time signature changes.
+    # Each object in changes is a tuple with 3 values.
+    # The first value is when the change occurs. The second value is the tempo at this change.
+    # The Third Value is whether or not this was a tempo change
+    changes = []
+    last_tempo = midi_data.estimate_tempo()
+    i = 0
+    j = 0
+    while i + j < len(time_signature_changes) + tempo_change_times.shape[0]:
+        if j == len(time_signature_changes) or \
+                (i != tempo_change_times.shape[0] and
+                 time_signature_changes[j].time >= tempo_change_times[i]):
+            next_change = (tempo_change_times[i], tempi[i], True)
+            last_tempo = tempi[i]
+            i += 1
+        else:
+            next_change = (time_signature_changes[j].time, last_tempo, False)
+            j += 1
+        changes.append(next_change)
+
+    curr_ts = 0
+    ts_passed = []
+    encoded_matrices = []
+    # After we do so, we need to find the range vectors to pass into the function "PrettyMIDI.get_piano_roll" for the given
+    # range and tempo
+    if changes is None:
+        encoded_matrices.append(from_vector_to_matrix(
+            np.arange(0, midi_data.get_end_time(), 1 / (beat_length * last_tempo)), last_tempo))
+        ts_passed.append(0)
+    else:
+        for i in range(len(changes)):
+            start_time = changes[i][0]
+            end_time = changes[i + 1][0] if i < len(changes) - 1 else midi_data.get_end_time()
+            vector = np.arange(start_time, end_time, 1 / (changes[i][1] / 60 * beat_length))[:-1]
+            if vector.shape[0] > beats_min * beat_length:
+                encoded_matrices.append(from_vector_to_matrix(vector, changes[i][1]))
+                ts_passed.append(curr_ts)
+            curr_ts += vector.shape[0]
+
+    return zip(encoded_matrices, ts_passed)
 
 def decoding_to_midi(encoded_matrix, tempo=100, time_signature="4/4"):
     """
