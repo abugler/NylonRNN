@@ -17,7 +17,7 @@ except FileNotFoundError:
 
 primer_matrix = np.empty((50, len(np_list)))
 for i in range(len(np_list)):
-    midi_data = np.load(data_path + path)
+    midi_data = np.load(data_path + np_list[i])
     primer_matrix[:, i] = midi_data[:, 0]
 
 np.save(primer_path, primer_matrix)

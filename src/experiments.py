@@ -55,3 +55,6 @@ for ts_segmenting, contiguous_beat in configs:
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.savefig(model_name + ".png")
+    plt.clf()
+
+    primers = np.empty(())

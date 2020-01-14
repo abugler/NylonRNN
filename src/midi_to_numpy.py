@@ -30,12 +30,12 @@ for file in os.listdir(encode_path):
         print(e)
 
 iter = 0
-starting_timesteps = []
+# starting_timesteps = []
 for path in song_list:
     midi_data = pretty_midi.PrettyMIDI(data_path + path)
     for matrix, timestep in encoding_to_LSTM(midi_data):
         np.save(encode_path + str(iter) + ".npy", matrix)
-        starting_timesteps.append(timestep)
+        # starting_timesteps.append(timestep)
         iter += 1
 
-np.save(timestep_path, np.array(starting_timesteps))
+# np.save(timestep_path, np.array(starting_timesteps))
